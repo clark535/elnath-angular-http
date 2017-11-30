@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
             console.log('error', errorConnectingToDatabase);
             res.sendStatus(500);
         } else {
-            client.query('SELECT * FROM food; ', function(errorMakingQuerry, result){
+            client.query('SELECT * FROM food ORDER BY id; ', function(errorMakingQuerry, result){
                 done();
                 if (errorMakingQuerry) {
                     console.log('error making query', errorMakingQuerry)
@@ -49,5 +49,55 @@ router.post('/', function(req, res){
     });
 });
 
+router.delete('/:id', function(req, res){
+    var foodToRemove = req.params.id;
+    //attempt to connect to the database
+    pool.connect(function(errorConnectingToDatabase, client, done){//connects to the database
+        if (errorConnectingToDatabase) {
+            //there was an error connecting to the database
+            console.log('error connecting to database', errorConnectingToDatabase);
+            res.sendStatus(500);
+        } else {
+            //we connected to the database
+            //now, we are going to get things from the database
+            client.query(`DELETE FROM food WHERE id=$1;`, [foodToRemove], function(errorMakingQuery, result){
+                done();
+                if (errorMakingQuery) {
+                    //query failed, did you test in postico?
+                    console.log('error making query', errorMakingQuery);
+                    res.send(500);
+                } else {
+                    res.sendStatus(200);//200 is all good.
+                }
+            });//copy and paste form database.js
+        }
+    });
+});
+
+router.put('/', function(req, res){
+    var foodToChange = req.body;
+    pool.connect(function(errorConnectingToDatabase, client, done){//connects to the database
+        if (errorConnectingToDatabase) {
+            //there was an error connecting to the database
+            console.log('error connecting to database', errorConnectingToDatabase);
+            res.sendStatus(500);
+        } else {
+            //we connected to the database
+            //now, we are going to get things from the database
+            client.query(`UPDATE food SET name=$1, deliciousness_rating=$2, is_hot=$3 WHERE id = $4;`, 
+            [foodToChange.name, foodToChange.deliciousness_rating, foodToChange.is_hot, foodToChange], 
+            function(errorMakingQuery, result){
+                done();
+                if (errorMakingQuery) {
+                    //query failed, did you test in postico?
+                    console.log('error making query', errorMakingQuery);
+                    res.send(500);
+                } else {
+                    res.sendStatus(200);//200 is all good.
+                }
+            });//copy and paste form database.js
+        }
+    });
+});
 
 module.exports = router;

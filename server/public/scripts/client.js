@@ -9,6 +9,8 @@ myApp.controller('FoodController', ['$http', function($http){
 
     self.newFood = { is_hot: false};
 
+    self.foodToChange = {};
+
     self.getFood = function(){
         $http({
             method: 'GET',
@@ -30,6 +32,31 @@ myApp.controller('FoodController', ['$http', function($http){
             self.getFood();
         });
     
+    };
+
+    self.removeFood = function(foodToDelete) {//passing in entire object
+        
+        console.log('remove food was clicked. The shoe id was', foodToDelete);
+    
+        $http({
+            method: 'DELETE',
+            url: '/food/' + foodToDelete.id,//targeting the id of the object
+        }).then(function(response) {
+            console.log('response', response);
+                self.getFood();//so list updates
+        });
+    };
+
+    self.changeFood = function(foodToEdit) {
+        
+        $http({
+            method: 'PUT',
+            url: '/food',
+            data: foodToEdit
+        }).then(function() {
+            console.log('response', response);
+                self.getFood();
+        });
     };
     
     self.getFood(); 
