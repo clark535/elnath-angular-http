@@ -8,8 +8,9 @@ router.get('/', function(req, res) {
             console.log('error', errorConnectingToDatabase);
             res.sendStatus(500);
         } else {
-            client.query('SELECT * FROM food ', function(errorMakingQuerry){
-                if (errorMakingQuerry, client, done) {
+            client.query('SELECT * FROM food; ', function(errorMakingQuerry, result){
+                done();
+                if (errorMakingQuerry) {
                     console.log('error making query', errorMakingQuerry)
                     res.sendStatus(500)
                 } else {
